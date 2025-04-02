@@ -4,41 +4,45 @@ import matplotlib.animation as animation
 from scipy.integrate import solve_ivp
 
 # Constants
-m0 = 0.5   # Massless junction point approximation (can be small value)
-m1 = 0.3   # Mass attached to the second spring
-k0 = 50.0  # Spring constant of first spring (N/m)
-k1 = 30.0  # Spring constant of second spring (N/m)
-c0 = 0.5   # Damping force spring 1
-c1 = 0.3   # Damping force spring 2
+m1 = 4   # Massless junction point approximation (can be small value)
+m2 = 3   # Mass attached to the second spring
+k1 = 60.0  # Spring constant of first spring (N/m)
+k2 = 60.0  # Spring constant of second spring (N/m)
+c1 = 3   # Damping force spring 1
+c2 = 3   # Damping force spring 2
 g = 9.81   # Gravity (m/s^2)
 Fc = 5.0   # Constant external force (N)
 
 def two_spring_system_damping(t, y):
-    x0, v0, x1, v1 = y
+    x1, v1, x2, v2 = y
     
-    dx0dt = v0
+    # dx0dt = v0
+    # dx1dt = v1 
+    # dv0dt = (-k1*x0 + m2*(x1 - x0) - c1*v0 + c2*(v1 - v0) + m1*g) / m1 # d/dt (v0) = ( -k1 )
+    # dv1dt = (-m2*(x1 - x0) - c2*(v1 - v0) + m2*g) / m2
+    
     dx1dt = v1
+    dx2dt = v2
+    ddx1ddt = (-k1*x1 -c1*x1 + m1*g + k2*(x2-x1) + c2*(v2-v1) )*1/m1 
+    ddx2ddt = (m2*g + k2*(x1-x2)+ c2*(v1-v2))*1/m2
     
-    dv0dt = (-k0*x0 + k1*(x1 - x0) - c0*v0 + c1*(v1 - v0) + m0*g) / m0
-    dv1dt = (-k1*(x1 - x0) - c1*(v1 - v0) + m1*g) / m1
-    
-    return [dx0dt, dv0dt, dx1dt, dv1dt]
+    return [dx1dt, ddx1ddt, dx2dt, ddx2ddt]
 
 # Define system of equations
-def two_spring_system0(t, y):
+def two_spring_system1(t, y):
     x1, v1, x2, v2 = y
     
     dx1dt = v1
-    dv1dt = (-k0*x1 + k1*(x2 - x1)) / m0
+    dv1dt = (-k1*x1 + k2*(x2 - x1)) / m1
     dx2dt = v2
-    dv2dt = (-k1*(x2 - x1) + m1*g + Fc) / m1
+    dv2dt = (-k2*(x2 - x1) + m2*g + Fc) / m2
     
     return [dx1dt, dv1dt, dx2dt, dv2dt]
 
 # Initial conditions
 x1_0 = 0.0   # Initial displacement of junction point
 v1_0 = 0.0   # Initial velocity of junction point
-x2_0 = 0.1  # Initial displacement of the mass
+x2_0 = 2  # Initial displacement of the mass
 v2_0 = 0.0   # Initial velocity of the mass
 
 y0 = [x1_0, v1_0, x2_0, v2_0]
@@ -56,7 +60,7 @@ x1_sol, x2_sol = sol.y[0], sol.y[2]
 # Animation setup
 fig, ax = plt.subplots(figsize=(5, 8))
 ax.set_xlim(-0.5, 0.5)
-ax.set_ylim(-1, 1)
+ax.set_ylim(-2, 2)
 ax.set_title("Two-Spring System Animation")
 ax.set_xlabel("Position")
 ax.set_ylabel("Height")
