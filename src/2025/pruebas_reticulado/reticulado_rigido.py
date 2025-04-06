@@ -23,13 +23,13 @@ def two_spring_system_damping(t, y):
     
     dx1dt = v1
     dx2dt = v2
-    ddx1ddt = (-k1*x1 -c1*x1 + m1*g + k2*(x2-x1) + c2*(v2-v1) )*1/m1 
+    ddx1ddt = (-k1*x1 -c1*v1 + m1*g + k2*(x2-x1) + c2*(v2-v1) )*1/m1
     ddx2ddt = (m2*g + k2*(x1-x2)+ c2*(v1-v2))*1/m2
     
     return [dx1dt, ddx1ddt, dx2dt, ddx2ddt]
 
 # Define system of equations
-def two_spring_system1(t, y):
+def two_spring_system(t, y):
     x1, v1, x2, v2 = y
     
     dx1dt = v1
@@ -51,7 +51,7 @@ y0 = [x1_0, v1_0, x2_0, v2_0]
 t_span = (0, 10)
 t_eval = np.linspace(0, 10, 1000)
 
-# Solve ODEs
+# Solve Ordinary Differential Equation.
 sol = solve_ivp(two_spring_system_damping, t_span, y0, t_eval=t_eval)
 
 # Extract solutions
